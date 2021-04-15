@@ -18,14 +18,37 @@ const char PCF8591 = 0x48;
 
 int main()
 {
-	int lcd_h, fd;
+	int lcd_h, fd, adcVal;
 	if(wiringPiSetup() == -1)
 		exit(1);
 	lcd_h = lcdInit(2,16,4,RS,EN,D0,D1,D2,D3,D0,D1,D2,D3);
-	fd = wiringPII2CSetup(PCF8591);
+	fd = wiringPiI2CSetup(PCF8591);
 	while(1)
 	{
-		
+		wiringPiI2CReadReg8(fd, PCF8591);
+		adcVal = wiringPiI2CReadReg8(fd, PCF8591);
+		printf("%d\n", adcVal);
+		if(adcVal < 33)
+		{
+			lcdPosition(lcd_h, 0, 1);
+			lcdPrintf(lcd_h, "SLABO");
+		}
+		if(adcVal>=33 && adcVal<66)
+		{
+			
+			lcdPosition(lcd_h, 0, 1);
+			lcdPrintf(lcd_h, "DNEVNO");
+		}
+		if(adcVal>66)
+		{
+
+			lcdPosition(lcd_h, 0, 1);
+			lcdPrintf(lcd_h, "NOCNO");
+		}
+		lcdPrintf("%d\n", adcVal);
+
+		delay(500);
+			
 	}	
 	return 0;
 }
